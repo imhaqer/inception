@@ -1,0 +1,35 @@
+volumes:
+    mariadb:
+         name: mariadb
+         driver: local
+         driver_opts:
+           type: none
+           o: bind
+           device: /home/hahamdan/data/mariadb
+
+    wordpress:
+        name: wordpress
+        driver: local
+        driver_opts:
+          type: none
+          o: bind
+          device: /home/hahamdan/data/wordpress
+
+networks:
+    network:
+        name: docker-network
+        driver: bridge
+
+services:
+    mariadb:
+        container_name: mariadb
+        build: ./requirements/mariadb
+        image: mariadb:10.11.11
+        restart: always
+        env_file: .env
+        ports: 
+            - "3306:3306"
+        volumes:
+            - mariadb:/var/lib/mysql
+        networks:
+            - network
