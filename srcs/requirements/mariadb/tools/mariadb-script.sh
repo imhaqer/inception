@@ -12,12 +12,11 @@ if [ ! -d "/var/lib/mysql/mysql" ]; then
     mariadb-install-db --basedir=/usr --user=mysql --datadir=/var/lib/mysql >/dev/null
 
     echo "==> Creating WordPress database and user..."
-    mysqld --user=mysql --bootstrap << EOF
+    mysqld --user=mysql --bootstrap <<EOF
 USE mysql;
 FLUSH PRIVILEGES;
 
 ALTER USER 'root'@'localhost' IDENTIFIED BY "$MYSQL_ROOT_PASSWORD";
-DELETE FROM mysql.user WHERE User = '';
 CREATE DATABASE $WORDPRESS_DATABASE_NAME CHARACTER SET utf8 COLLATE utf8_general_ci;
 CREATE USER $WORDPRESS_DATABASE_USER@'%' IDENTIFIED BY "$WORDPRESS_DATABASE_PASSWORD";
 GRANT ALL PRIVILEGES ON $WORDPRESS_DATABASE_NAME.* TO $WORDPRESS_DATABASE_USER@'%';

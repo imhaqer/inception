@@ -1,19 +1,19 @@
 volumes:
     mariadb:
-         name: mariadb
-         driver: local
-         driver_opts:
-           type: none
-           o: bind
-           device: /home/hahamdan/data/mariadb
+        name: mariadb
+        driver: local
+        driver_opts:
+            type: none
+            o: bind
+            device: /home/hahamdan/data/mariadb
 
     wordpress:
         name: wordpress
         driver: local
         driver_opts:
-          type: none
-          o: bind
-          device: /home/hahamdan/data/wordpress
+            type: none
+            o: bind
+            device: /home/hahamdan/data/wordpress
 
 networks:
     network:
@@ -27,41 +27,36 @@ services:
         image: mariadb:10.11.11
         restart: always
         env_file: .env
-        ports: 
-            - "3306:3306"
         volumes:
             - mariadb:/var/lib/mysql
         networks:
             - network
-      
+
     wordpress:
         container_name: wordpress
         build: ./requirements/wordpress
         image: wordpress:6.7.2
         restart: always
         env_file: .env
+        depends_on:
+            - mariadb
         networks:
-          - network
+            - network
         volumes:
-          - wordpress:/var/www/html
-        healthcheck:
-            test: ["CMD", "test", "-f", "/var/www/html/wp-login.php"]
-            interval: 10s
-            timeout: 5s
-            retries: 5
-            
+            - wordpress:/var/www/html
+
     nginx:
-            container_name: nginx
-            build: ./requirements/nginx
-            image: nginx:1.26.2
-            restart: always
-            env_file: .env
-            depends_on:
-              wordpress:
-                condition: service_healthy
-            networks:
-              - network
-            ports:
-              - "443:443"
-            volumes:
-              - wordpress:/var/www/html
+        container_name: nginx
+        build: ./requirements/nginx
+        image: nginx:1.26.2
+        restart: always
+        env_file: .env
+        depends_on:
+            - wordpress
+        networks:
+            - network
+        ports:
+            - "80:80"  #http redirection
+            - "443:443"
+        volumes:
+            - wordpress:/var/www/html

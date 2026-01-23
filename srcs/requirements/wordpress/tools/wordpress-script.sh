@@ -11,12 +11,7 @@ wget -q https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.pha
 chmod +x /usr/local/bin/wp
 
 echo "==> Checking if MariaDB is running before proceeding with WordPress setup..."
-mariadb-admin ping \
-  --protocol=tcp \
-  --host=mariadb \
-  -u root \
-  --password="$MARIADB_ROOT_PASSWORD" \
-  --wait=300
+mariadb-admin ping --protocol=tcp --host=mariadb -u $WORDPRESS_DATABASE_USER --password=$WORDPRESS_DATABASE_PASSWORD --wait=300
 
 if [ ! -f /var/www/html/wp-config.php ]; then
     echo "==> Downloading, Installing, Configuring WordPress files (core essentials)..."
@@ -25,7 +20,7 @@ if [ ! -f /var/www/html/wp-config.php ]; then
     wp config create \
         --dbname=$WORDPRESS_DATABASE_NAME \
         --dbuser=$WORDPRESS_DATABASE_USER \
-        --dbpass=$WORDPRESS_DATABASE_USER_PASSWORD \
+        --dbpass=$WORDPRESS_DATABASE_PASSWORD \
         --dbhost=mariadb \
         --force
 
@@ -51,4 +46,4 @@ chown -R www-data:www-data /var/www/html
 chmod -R 755 /var/www/html/
 
 echo "==> Running PHP-FPM in the foreground (to prevent the container from stopping)..."
-php-fpm83 -F
+exec php-fpm83 -F

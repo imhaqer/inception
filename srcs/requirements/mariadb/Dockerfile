@@ -8,6 +8,6 @@ RUN chmod 644 /etc/my.cnf.d/mariadb_config
 COPY ./tools/mariadb-script.sh /usr/local/bin/mariadb-script.sh 
 RUN chmod +x /usr/local/bin/mariadb-script.sh
 
-EXPOSE 3306 
+#EXPOSE 3306 
 
 ENTRYPOINT ["mariadb-script.sh"]
